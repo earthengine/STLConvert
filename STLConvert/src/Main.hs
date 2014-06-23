@@ -7,6 +7,7 @@ import Data.ByteString.Lazy(readFile)
 import Control.Monad(replicateM)
 import Prelude hiding (readFile)
 import System.Environment(getArgs)
+import Control.Applicative((<$>),(<*>))
 
 
 data Vector3 = Vector3 { x :: Float, y :: Float, z :: Float }
@@ -31,20 +32,11 @@ instance Show Triangle where
     \endfacet\n"
  
 getVector3 :: Get Vector3
-getVector3 = do
-  w1 <- getFloat32le
-  w2 <- getFloat32le
-  w3 <- getFloat32le
-  return $ Vector3 w1 w2 w3
+getVector3 = Vector3 <$> getFloat32le <*> getFloat32le <*> getFloat32le 
 
 getTriangle :: Get Triangle
-getTriangle = do
-  n <- getVector3
-  v1 <- getVector3
-  v2 <- getVector3
-  v3 <- getVector3
-  a <- getWord16le
-  return $ Triangle n v1 v2 v3 a
+getTriangle = Triangle <$> getVector3 <*> 
+    getVector3 <*> getVector3 <*> getVector3 <*> getWord16le 
 
 getStlBinary :: Get [Triangle]
 getStlBinary = do
@@ -64,9 +56,10 @@ checkArgs [file] = ioStlBin2Asc file
 checkArgs _ = usage
 
 usage :: IO ()
-usage = putStrLn "Usage: StlBin2Asc file"
+usage = putStrLn "Usage: StlConvert file"
 
 main :: IO ()
 main = do
   args <-getArgs
-  checkArgs args  
+  checkArgs args
+

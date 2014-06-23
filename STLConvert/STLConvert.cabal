@@ -7,10 +7,6 @@ author:         joe
 executable STLConvert
   hs-source-dirs:  src
   main-is:         Main.hs
-  build-depends:   
-                   base >= 4,
-                   binary >0.5,
-                   data-binary-ieee754,
-                   bytestring
+  build-depends: base,bytestring,data-binary-ieee754,binary
   ghc-options:     -Wall
 
